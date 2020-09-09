@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="1.0" xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:sap="http://www.sap.com/Protocols/SAPData">
+  <edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Aggregation.V1.xml" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+    <edmx:Include Alias="Aggregation" Namespace="Org.OData.Aggregation.V1"/>
+  </edmx:Reference>
+  <edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/Analytics.xml" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+    <edmx:Include Alias="Analytics" Namespace="com.sap.vocabularies.Analytics.v1"/>
+  </edmx:Reference>
+  <edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/Common.xml" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+    <edmx:Include Alias="Common" Namespace="com.sap.vocabularies.Common.v1"/>
+  </edmx:Reference>
+  <edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Core.V1.xml" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+    <edmx:Include Alias="Core" Namespace="Org.OData.Core.V1"/>
+  </edmx:Reference>
+  <edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/UI.xml" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+    <edmx:Include Alias="UI" Namespace="com.sap.vocabularies.UI.v1"/>
+  </edmx:Reference>
+  <edmx:DataServices m:DataServiceVersion="2.0">
+    <Schema Namespace="CatalogService" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
+      <EntityContainer Name="EntityContainer" m:IsDefaultEntityContainer="true">
+        <EntitySet Name="Currencies" EntityType="CatalogService.Currencies"/>
+        <EntitySet Name="Currencies_texts" EntityType="CatalogService.Currencies_texts"/>
+        <EntitySet Name="Expenses" EntityType="CatalogService.Expenses"/>
+        <EntitySet Name="ExpensesAggregate" EntityType="CatalogService.ExpensesAggregate"/>
+        <EntitySet Name="ExpensesAnalytics" EntityType="CatalogService.ExpensesAnalytics"/>
+        <AssociationSet Name="Currencies_texts_1" Association="CatalogService.Currencies_texts_1">
+          <End Role="Currencies" EntitySet="Currencies"/>
+          <End Role="Currencies_texts" EntitySet="Currencies_texts"/>
+        </AssociationSet>
+        <AssociationSet Name="Currencies_localized" Association="CatalogService.Currencies_localized">
+          <End Role="Currencies" EntitySet="Currencies"/>
+          <End Role="Currencies_texts" EntitySet="Currencies_texts"/>
+        </AssociationSet>
+        <AssociationSet Name="Expenses_currency" Association="CatalogService.Expenses_currency">
+          <End Role="Expenses" EntitySet="Expenses"/>
+          <End Role="Currencies" EntitySet="Currencies"/>
+        </AssociationSet>
+        <AssociationSet Name="ExpensesAggregate_currency" Association="CatalogService.ExpensesAggregate_currency">
+          <End Role="ExpensesAggregate" EntitySet="ExpensesAggregate"/>
+          <End Role="Currencies" EntitySet="Currencies"/>
+        </AssociationSet>
+        <AssociationSet Name="ExpensesAnalytics_currency" Association="CatalogService.ExpensesAnalytics_currency">
+          <End Role="ExpensesAnalytics" EntitySet="ExpensesAnalytics"/>
+          <End Role="Currencies" EntitySet="Currencies"/>
+        </AssociationSet>
+      </EntityContainer>
+      <EntityType Name="Currencies">
+        <Key>
+          <PropertyRef Name="code"/>
+        </Key>
+        <Property Name="name" Type="Edm.String" MaxLength="255"/>
+        <Property Name="descr" Type="Edm.String" MaxLength="1000"/>
+        <Property Name="code" Type="Edm.String" MaxLength="3" Nullable="false"/>
+        <Property Name="symbol" Type="Edm.String" MaxLength="5"/>
+        <NavigationProperty Name="texts" Relationship="CatalogService.Currencies_texts_1" FromRole="Currencies" ToRole="Currencies_texts"/>
+        <NavigationProperty Name="localized" Relationship="CatalogService.Currencies_localized" FromRole="Currencies" ToRole="Currencies_texts"/>
+      </EntityType>
+      <EntityType Name="Currencies_texts">
+        <Key>
+          <PropertyRef Name="locale"/>
+          <PropertyRef Name="code"/>
+        </Key>
+        <Property Name="locale" Type="Edm.String" MaxLength="14" Nullable="false"/>
+        <Property Name="name" Type="Edm.String" MaxLength="255"/>
+        <Property Name="descr" Type="Edm.String" MaxLength="1000"/>
+        <Property Name="code" Type="Edm.String" MaxLength="3" Nullable="false"/>
+      </EntityType>
+      <EntityType Name="Expenses">
+        <Key>
+          <PropertyRef Name="ID"/>
+        </Key>
+        <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+        <Property Name="category" Type="Edm.String"/>
+        <Property Name="amount" Type="Edm.Decimal" Scale="2" Precision="9"/>
+        <NavigationProperty Name="currency" Relationship="CatalogService.Expenses_currency" FromRole="Expenses" ToRole="Currencies"/>
+        <Property Name="currency_code" Type="Edm.String" MaxLength="3"/>
+      </EntityType>
+      <EntityType Name="ExpensesAggregate">
+        <Key>
+          <PropertyRef Name="ID"/>
+        </Key>
+        <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+        <Property Name="category" Type="Edm.String"/>
+        <Property Name="amount" Type="Edm.Decimal" Scale="2" Precision="9"/>
+        <NavigationProperty Name="currency" Relationship="CatalogService.ExpensesAggregate_currency" FromRole="ExpensesAggregate" ToRole="Currencies"/>
+        <Property Name="currency_code" Type="Edm.String" MaxLength="3"/>
+      </EntityType>
+      <EntityType Name="ExpensesAnalytics" sap:semantics="aggregate">
+        <Key>
+          <PropertyRef Name="ID__"/>
+        </Key>
+        <Property Name="ID__" Type="Edm.String" Nullable="false" sap:sortable="false" sap:filterable="false"/>
+        <Property Name="ID" Type="Edm.Guid"/>
+        <Property Name="category" Type="Edm.String" sap:aggregation-role="dimension" sap:label="Category"/>
+        <Property Name="amount" Type="Edm.Decimal" Scale="2" Precision="9" sap:aggregation-role="measure" sap:label="Amount"/>
+        <NavigationProperty Name="currency" Relationship="CatalogService.ExpensesAnalytics_currency" FromRole="ExpensesAnalytics" ToRole="Currencies" sap:aggregation-role="dimension" sap:label="Currency"/>
+        <Property Name="currency_code" Type="Edm.String" MaxLength="3" sap:aggregation-role="dimension" sap:label="Currency"/>
+      </EntityType>
+      <Association Name="Currencies_texts_1">
+        <End Role="Currencies" Type="CatalogService.Currencies" Multiplicity="*"/>
+        <End Role="Currencies_texts" Type="CatalogService.Currencies_texts" Multiplicity="*">
+          <OnDelete Action="Cascade"/>
+        </End>
+      </Association>
+      <Association Name="Currencies_localized">
+        <End Role="Currencies" Type="CatalogService.Currencies" Multiplicity="*"/>
+        <End Role="Currencies_texts" Type="CatalogService.Currencies_texts" Multiplicity="0..1"/>
+        <ReferentialConstraint>
+          <Principal Role="Currencies_texts">
+            <PropertyRef Name="code"/>
+          </Principal>
+          <Dependent Role="Currencies">
+            <PropertyRef Name="code"/>
+          </Dependent>
+        </ReferentialConstraint>
+      </Association>
+      <Association Name="Expenses_currency">
+        <End Role="Expenses" Type="CatalogService.Expenses" Multiplicity="*"/>
+        <End Role="Currencies" Type="CatalogService.Currencies" Multiplicity="0..1"/>
+        <ReferentialConstraint>
+          <Principal Role="Currencies">
+            <PropertyRef Name="code"/>
+          </Principal>
+          <Dependent Role="Expenses">
+            <PropertyRef Name="currency_code"/>
+          </Dependent>
+        </ReferentialConstraint>
+      </Association>
+      <Association Name="ExpensesAggregate_currency">
+        <End Role="ExpensesAggregate" Type="CatalogService.ExpensesAggregate" Multiplicity="*"/>
+        <End Role="Currencies" Type="CatalogService.Currencies" Multiplicity="0..1"/>
+        <ReferentialConstraint>
+          <Principal Role="Currencies">
+            <PropertyRef Name="code"/>
+          </Principal>
+          <Dependent Role="ExpensesAggregate">
+            <PropertyRef Name="currency_code"/>
+          </Dependent>
+        </ReferentialConstraint>
+      </Association>
+      <Association Name="ExpensesAnalytics_currency">
+        <End Role="ExpensesAnalytics" Type="CatalogService.ExpensesAnalytics" Multiplicity="*"/>
+        <End Role="Currencies" Type="CatalogService.Currencies" Multiplicity="0..1"/>
+        <ReferentialConstraint>
+          <Principal Role="Currencies">
+            <PropertyRef Name="code"/>
+          </Principal>
+          <Dependent Role="ExpensesAnalytics">
+            <PropertyRef Name="currency_code"/>
+          </Dependent>
+        </ReferentialConstraint>
+      </Association>
+      <Annotations Target="CatalogService.Currencies" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="UI.Identification">
+          <Collection>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="name"/>
+            </Record>
+          </Collection>
+        </Annotation>
+      </Annotations>
+      <Annotations Target="CatalogService.Currencies/name" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Name"/>
+      </Annotations>
+      <Annotations Target="CatalogService.Currencies/descr" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Description"/>
+      </Annotations>
+      <Annotations Target="CatalogService.Currencies/code" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Currency Code"/>
+      </Annotations>
+      <Annotations Target="CatalogService.Currencies/symbol" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Currency Symbol"/>
+      </Annotations>
+      <Annotations Target="CatalogService.Currencies_texts/name" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Name"/>
+      </Annotations>
+      <Annotations Target="CatalogService.Currencies_texts/descr" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Description"/>
+      </Annotations>
+      <Annotations Target="CatalogService.Currencies_texts/code" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Currency Code"/>
+      </Annotations>
+      <Annotations Target="CatalogService.Expenses" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="UI.LineItem">
+          <Collection>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="ID"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="category"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="amount"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="currency_code"/>
+            </Record>
+          </Collection>
+        </Annotation>
+        <Annotation Term="UI.SelectionFields">
+          <Collection>
+            <PropertyPath>category</PropertyPath>
+            <PropertyPath>currency_code</PropertyPath>
+          </Collection>
+        </Annotation>
+      </Annotations>
+      <Annotations Target="CatalogService.Expenses/category" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Category"/>
+      </Annotations>
+      <Annotations Target="CatalogService.Expenses/amount" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Amount"/>
+      </Annotations>
+      <Annotations Target="CatalogService.Expenses/currency" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Currency"/>
+        <Annotation Term="Core.Description" String="A currency code as specified in ISO 4217"/>
+      </Annotations>
+      <Annotations Target="CatalogService.Expenses/currency_code" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Currency"/>
+        <Annotation Term="Common.ValueList">
+          <Record Type="Common.ValueListType">
+            <PropertyValue Property="Label" String="Currency"/>
+            <PropertyValue Property="CollectionPath" String="Currencies"/>
+            <PropertyValue Property="Parameters">
+              <Collection>
+                <Record Type="Common.ValueListParameterInOut">
+                  <PropertyValue Property="LocalDataProperty" PropertyPath="currency_code"/>
+                  <PropertyValue Property="ValueListProperty" String="code"/>
+                </Record>
+                <Record Type="Common.ValueListParameterDisplayOnly">
+                  <PropertyValue Property="ValueListProperty" String="name"/>
+                </Record>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="Core.Description" String="A currency code as specified in ISO 4217"/>
+      </Annotations>
+      <Annotations Target="CatalogService.ExpensesAggregate" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Analytics.AggregatedProperties">
+          <Collection>
+            <Record Type="Analytics.AggregatedPropertyType">
+              <PropertyValue Property="Name" String="totalAmount"/>
+              <PropertyValue Property="AggregationMethod" String="sum"/>
+              <PropertyValue Property="AggregatableProperty" PropertyPath="amount"/>
+              <Annotation Term="Common.Label" String="Total Amount"/>
+            </Record>
+          </Collection>
+        </Annotation>
+        <Annotation Term="UI.Chart">
+          <Collection>
+            <Record>
+              <PropertyValue Property="ID" String="chart1"/>
+              <PropertyValue Property="ChartType" String="Column"/>
+              <PropertyValue Property="Measures">
+                <Collection>
+                  <String>amount</String>
+                </Collection>
+              </PropertyValue>
+              <PropertyValue Property="Dimensions">
+                <Collection>
+                  <String>category</String>
+                </Collection>
+              </PropertyValue>
+            </Record>
+          </Collection>
+        </Annotation>
+        <Annotation Term="UI.PresentationVariant">
+          <Collection>
+            <Record>
+              <PropertyValue Property="ID" String="chartVariant"/>
+              <PropertyValue Property="Visualizations">
+                <Collection>
+                  <String>chart1</String>
+                </Collection>
+              </PropertyValue>
+            </Record>
+          </Collection>
+        </Annotation>
+      </Annotations>
+      <Annotations Target="CatalogService.ExpensesAggregate/category" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Category"/>
+      </Annotations>
+      <Annotations Target="CatalogService.ExpensesAggregate/amount" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Amount"/>
+      </Annotations>
+      <Annotations Target="CatalogService.ExpensesAggregate/currency" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Currency"/>
+        <Annotation Term="Core.Description" String="A currency code as specified in ISO 4217"/>
+      </Annotations>
+      <Annotations Target="CatalogService.ExpensesAggregate/currency_code" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Currency"/>
+        <Annotation Term="Common.ValueList">
+          <Record Type="Common.ValueListType">
+            <PropertyValue Property="Label" String="Currency"/>
+            <PropertyValue Property="CollectionPath" String="Currencies"/>
+            <PropertyValue Property="Parameters">
+              <Collection>
+                <Record Type="Common.ValueListParameterInOut">
+                  <PropertyValue Property="LocalDataProperty" PropertyPath="currency_code"/>
+                  <PropertyValue Property="ValueListProperty" String="code"/>
+                </Record>
+                <Record Type="Common.ValueListParameterDisplayOnly">
+                  <PropertyValue Property="ValueListProperty" String="name"/>
+                </Record>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="Core.Description" String="A currency code as specified in ISO 4217"/>
+      </Annotations>
+      <Annotations Target="CatalogService.ExpensesAnalytics" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Aggregation.ApplySupported">
+          <Record Type="Aggregation.ApplySupportedType">
+            <PropertyValue Property="PropertyRestrictions" Bool="true"/>
+          </Record>
+        </Annotation>
+      </Annotations>
+      <Annotations Target="CatalogService.ExpensesAnalytics/ID__" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="CatalogService.ExpensesAnalytics/category" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Analytics.Dimension" Bool="true"/>
+        <Annotation Term="Common.Label" String="Category"/>
+      </Annotations>
+      <Annotations Target="CatalogService.ExpensesAnalytics/amount" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Aggregation.default" EnumMember="Aggregation.defaultType/SUM"/>
+        <Annotation Term="Analytics.Measure" Bool="true"/>
+        <Annotation Term="Common.Label" String="Amount"/>
+      </Annotations>
+      <Annotations Target="CatalogService.ExpensesAnalytics/currency" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Currency"/>
+        <Annotation Term="Core.Description" String="A currency code as specified in ISO 4217"/>
+      </Annotations>
+      <Annotations Target="CatalogService.ExpensesAnalytics/currency_code" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Analytics.Dimension" Bool="true"/>
+        <Annotation Term="Common.Label" String="Currency"/>
+        <Annotation Term="Common.ValueList">
+          <Record Type="Common.ValueListType">
+            <PropertyValue Property="Label" String="Currency"/>
+            <PropertyValue Property="CollectionPath" String="Currencies"/>
+            <PropertyValue Property="Parameters">
+              <Collection>
+                <Record Type="Common.ValueListParameterInOut">
+                  <PropertyValue Property="LocalDataProperty" PropertyPath="currency_code"/>
+                  <PropertyValue Property="ValueListProperty" String="code"/>
+                </Record>
+                <Record Type="Common.ValueListParameterDisplayOnly">
+                  <PropertyValue Property="ValueListProperty" String="name"/>
+                </Record>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="Core.Description" String="A currency code as specified in ISO 4217"/>
+      </Annotations>
+    </Schema>
+  </edmx:DataServices>
+</edmx:Edmx>
