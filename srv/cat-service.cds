@@ -7,19 +7,43 @@ service CatalogService {
 
 annotate CatalogService.ExpensesAnalytics with @(
     UI: {
-        Chart: [{
-                ChartType: 'Donut',
-                Measures: ['amount'],
-                Dimensions: ['category'],
-                DimensionAttributes: [{
-                    Dimension: 'category',
-                    Role: 'Category'
-                }],
-                MeasureAttributes: [{
-                    Measure: 'amount',
-                    Role: 'Axis1'
-                }]        
-        }]
+        Chart: {
+            $Type: 'UI.ChartDefinitionType',
+            ChartType: #Donut,
+            Measures: ['amount'],
+            MeasureAttributes: [{
+                $Type: 'UI.ChartMeasureAttributeType',
+                Measure: 'amount',
+                Role: #Axis1
+            }],             
+            Dimensions: ['category'],
+            DimensionAttributes: [{
+                $Type: 'UI.ChartDimensionAttributeType',
+                Dimension: 'category',
+                Role: #Category
+            }]       
+        }
+    }
+);
+
+annotate CatalogService.Expenses with @(
+    UI: {
+        Chart: {
+            $Type: 'UI.ChartDefinitionType',
+            ChartType: #Donut,
+            Measures: ['amount'],
+            MeasureAttributes: [{
+                $Type: 'UI.ChartMeasureAttributeType',
+                Measure: 'amount',
+                Role: #Axis1
+            }],             
+            Dimensions: ['category'],
+            DimensionAttributes: [{
+                $Type: 'UI.ChartDimensionAttributeType',
+                Dimension: 'category',
+                Role: #Category
+            }]       
+        }
     }
 );
 

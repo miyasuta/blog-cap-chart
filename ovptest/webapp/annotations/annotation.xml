@@ -6,53 +6,7 @@
         <edmx:Include Namespace="CatalogService"/>
     </edmx:Reference>
     <edmx:DataServices>
-        <Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="demo">
-			<Annotations Target="CatalogService.ExpensesAnalytics">
-				<Annotation Term="UI.Chart">
-					<Record Type="UI.ChartDefinitionType">
-						<PropertyValue Property="ChartType" EnumMember="UI.ChartType/Donut"/>
-						<PropertyValue Property="MeasureAttributes">
-							<Collection>
-								<Record Type="UI.ChartMeasureAttributeType">
-									<PropertyValue Property="Measure" PropertyPath="amount"/>
-									<PropertyValue Property="Role" EnumMember="UI.ChartMeasureRoleType/Axis1"/>
-								</Record>
-							</Collection>
-						</PropertyValue>
-						<PropertyValue Property="DimensionAttributes">
-							<Collection>
-								<Record Type="UI.ChartDimensionAttributeType">
-									<PropertyValue Property="Dimension" PropertyPath="category"/>
-									<PropertyValue Property="Role" EnumMember="UI.ChartDimensionRoleType/Category"/>
-								</Record>
-							</Collection>
-						</PropertyValue>
-					</Record>
-				</Annotation>
-			</Annotations>  
-			<Annotations Target="CatalogService.Expenses">
-				<Annotation Term="UI.Chart">
-					<Record Type="UI.ChartDefinitionType">
-						<PropertyValue Property="ChartType" EnumMember="UI.ChartType/Donut"/>
-						<PropertyValue Property="MeasureAttributes">
-							<Collection>
-								<Record Type="UI.ChartMeasureAttributeType">
-									<PropertyValue Property="Measure" PropertyPath="amount"/>
-									<PropertyValue Property="Role" EnumMember="UI.ChartMeasureRoleType/Axis1"/>
-								</Record>
-							</Collection>
-						</PropertyValue>
-						<PropertyValue Property="DimensionAttributes">
-							<Collection>
-								<Record Type="UI.ChartDimensionAttributeType">
-									<PropertyValue Property="Dimension" PropertyPath="category"/>
-									<PropertyValue Property="Role" EnumMember="UI.ChartDimensionRoleType/Category"/>
-								</Record>
-							</Collection>
-						</PropertyValue>
-					</Record>
-				</Annotation>
-			</Annotations> 			         
+        <Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="demo">		         
         </Schema>
     </edmx:DataServices>
 </edmx:Edmx>
